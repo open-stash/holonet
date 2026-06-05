@@ -30,6 +30,15 @@ import {
 } from "@/components/ui/tooltip"
 import { PanelLeftIcon } from "lucide-react"
 
+// React's native HTML drag/animation handlers have signatures that conflict with
+// framer-motion's redefinitions, so they must be stripped from any props spread
+// onto a `motion.*` element (see `Sidebar` and `SidebarInset` below).
+type MotionConflictingProps =
+  | "onDrag"
+  | "onDragStart"
+  | "onDragEnd"
+  | "onAnimationStart"
+
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
@@ -162,7 +171,7 @@ function Sidebar({
   children,
   dir,
   ...props
-}: React.ComponentProps<"div"> & {
+}: Omit<React.ComponentProps<"div">, MotionConflictingProps> & {
   side?: "left" | "right"
   variant?: "sidebar" | "floating" | "inset"
   collapsible?: "offcanvas" | "icon" | "none"
@@ -322,7 +331,10 @@ function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
   )
 }
 
-function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
+function SidebarInset({
+  className,
+  ...props
+}: Omit<React.ComponentProps<"main">, MotionConflictingProps>) {
   const prefersReducedMotion = useReducedMotion()
   const layoutTransition = prefersReducedMotion ? { duration: 0 } : sidebarSpring
 

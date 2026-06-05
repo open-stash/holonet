@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
@@ -13,7 +13,7 @@ import { resetPasswordSchema, ResetPasswordFormValues } from "@/lib/validations/
 import { resetPassword } from "@/lib/api/auth";
 import { SentinelApiError } from "@/lib/api/sentinel";
 
-export default function ResetPasswordPage() {
+function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") ?? "";
@@ -163,5 +163,14 @@ export default function ResetPasswordPage() {
       </section>
 
     </main>
+  );
+}
+
+// useSearchParams() needs a Suspense boundary for static prerendering (Next.js).
+export default function ResetPasswordPage() {
+  return (
+    <Suspense>
+      <ResetPasswordForm />
+    </Suspense>
   );
 }
