@@ -1,0 +1,28 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  CircleHelp,
+  CreditCard,
+  Plug,
+  User,
+  Zap,
+} from "lucide-react";
+
+export interface SettingsNavItem {
+  href: string;
+  label: string;
+  icon: LucideIcon;
+}
+
+export const settingsNavItems: SettingsNavItem[] = [
+  { href: "/settings/account", label: "Account", icon: User },
+  { href: "/settings/billing", label: "Billing", icon: CreditCard },
+  { href: "/settings/integrations", label: "Integrations", icon: Plug },
+  {
+    href: "/settings/connections",
+    label: "Connections & MCP",
+    icon: Zap,
+  },
+  { href: "/settings/support", label: "Support & Help", icon: CircleHelp },
+];
+
+export const dangerZoneHref = "/settings/danger-zone";
