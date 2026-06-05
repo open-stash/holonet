@@ -30,6 +30,10 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const registerSchema = z
   .object({
+    name: z
+      .string()
+      .min(1, "Full name is required")
+      .max(100, "Name is too long"),
     email: emailField,
     password: passwordField,
     confirm_password: z.string().min(1, "Please confirm your password"),

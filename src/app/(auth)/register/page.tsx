@@ -29,7 +29,7 @@ export default function RegisterPage() {
 
   async function onSubmit(values: RegisterFormValues) {
     try {
-      await registerUser({ email: values.email, password: values.password });
+      await registerUser({ name: values.name, email: values.email, password: values.password });
       setSuccessEmail(values.email);
     } catch (err) {
       toast.error("Registration failed", {
@@ -110,7 +110,7 @@ export default function RegisterPage() {
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            {/* full name — client-only, not sent to backend */}
+            {/* full name */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-semibold text-foreground">Full Name</Label>
               <Input
@@ -118,8 +118,13 @@ export default function RegisterPage() {
                 type="text"
                 placeholder="John Doe"
                 autoComplete="name"
+                aria-invalid={!!errors.name}
                 className="h-12 rounded-xl bg-white border-slate-200 px-4 text-sm shadow-none"
+                {...register("name")}
               />
+              {errors.name && (
+                <p className="text-[12px] text-destructive">{errors.name.message}</p>
+              )}
             </div>
 
             {/* email */}
