@@ -158,3 +158,30 @@
 .animate-bar-pulse-once {
   animation: bar-pulse 1.2s cubic-bezier(0.45, 0, 0.55, 1) 1;
 }
+
+/* Skeleton shimmer — a soft light sweep used while a source's thumbnail is being
+   scraped. Apply .shimmer to a positioned element with an overflow-hidden parent. */
+@keyframes shimmer-sweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 100%
+  );
+  animation: shimmer-sweep 1.6s ease-in-out infinite;
+}

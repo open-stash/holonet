@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { FileText, Link2 } from "lucide-react";
+import { FileText, ImageIcon, Link2 } from "lucide-react";
 import type { MockSource } from "@/components/dashboard/mock";
 import { cn } from "@/lib/utils";
 import {
@@ -43,6 +43,28 @@ function SourceCardShell({
   );
 }
 
+// True while the async worker is still scraping/embedding the source — the
+// thumbnail isn't available yet, so we show a "fetching preview" affordance.
+function isProcessing(source: MockSource) {
+  return source.status === "pending" || source.status === "processing";
+}
+
+// Animated skeleton shown in the preview area while the thumbnail is being scraped.
+// A neutral block with a shimmer sweep + faint image glyph — replaces the real
+// preview until the worker populates image_url.
+function PreviewSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        "shimmer flex w-full items-center justify-center bg-slate-100",
+        className
+      )}
+    >
+      <ImageIcon className="size-6 text-slate-300" />
+    </div>
+  );
+}
+
 function CardFoot({
   title,
   children,
@@ -68,6 +90,7 @@ function LinkCard({ source }: SourceCardProps) {
   // Real scraped OG image from kyber; preview_image_url kept for mock compatibility.
   const previewURL = source.image_url ?? source.preview_image_url;
   const showPreview = !!previewURL && !previewBroken;
+  const processing = isProcessing(source) && !showPreview;
 
   return (
     <SourceCardShell source={source} className={whiteCardClass}>
@@ -80,6 +103,8 @@ function LinkCard({ source }: SourceCardProps) {
             className="aspect-video w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             onError={() => setPreviewBroken(true)}
           />
+        ) : processing ? (
+          <PreviewSkeleton className="aspect-video" />
         ) : (
           <div className="flex aspect-video w-full items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 text-slate-300">
             <Link2 className="size-6" />
@@ -186,6 +211,7 @@ function PdfCard({ source }: SourceCardProps) {
   const title = sourceTitle(source);
   const pages = mockPageCount(source);
   const showThumb = !!source.image_url && !thumbBroken;
+  const processing = isProcessing(source) && !showThumb;
 
   return (
     <SourceCardShell
@@ -203,6 +229,8 @@ function PdfCard({ source }: SourceCardProps) {
               onError={() => setThumbBroken(true)}
             />
           </div>
+        ) : processing ? (
+          <PreviewSkeleton className="aspect-[4/3]" />
         ) : (
           <DocumentPagePreview
             title={title}

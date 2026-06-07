@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   CircleHelp,
   CreditCard,
+  MonitorSmartphone,
   Plug,
   User,
   Zap,
@@ -15,6 +16,7 @@ export interface SettingsNavItem {
 
 export const settingsNavItems: SettingsNavItem[] = [
   { href: "/settings/account", label: "Account", icon: User },
+  { href: "/settings/sessions", label: "Devices", icon: MonitorSmartphone },
   { href: "/settings/billing", label: "Billing", icon: CreditCard },
   { href: "/settings/integrations", label: "Integrations", icon: Plug },
   {

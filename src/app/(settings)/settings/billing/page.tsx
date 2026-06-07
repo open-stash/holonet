@@ -1,10 +1,5 @@
-import { SettingsPlaceholder } from "@/components/settings/settings-placeholder";
+import { BillingSettingsPanel } from "@/components/settings/panels/billing-settings-panel";
 
 export default function SettingsBillingPage() {
-  return (
-    <SettingsPlaceholder
-      title="Billing"
-      description="Manage your subscription and payment methods."
-    />
-  );
+  return <BillingSettingsPanel />;
 }

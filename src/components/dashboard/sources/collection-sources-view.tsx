@@ -13,6 +13,7 @@ import { SourcesListView } from "./sources-list-view";
 import { SourcesPagination } from "./sources-pagination";
 import { SourcesToolbar } from "./sources-toolbar";
 import { useCollectionViewMode } from "./use-collection-view-mode";
+import { useSourceProcessingPoll } from "./use-source-processing-poll";
 
 interface CollectionSourcesViewProps {
   collectionID: string;
@@ -71,6 +72,9 @@ export function CollectionSourcesView({ collectionID }: CollectionSourcesViewPro
   useEffect(() => {
     setPage(1);
   }, [collectionID]);
+
+  // Keep newly-saved sources updating in place (thumbnail/status) without a refresh.
+  useSourceProcessingPoll(collectionID);
 
   // Ensure collections are loaded (e.g. on a hard refresh of this page directly).
   useEffect(() => {

@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
 import { AiChatAttachMenu } from "./ai-chat-attach-menu";
-import { AiChatModelMenu } from "./ai-chat-model-menu";
 import { AiChatSearchModeMenu } from "./ai-chat-search-mode-menu";
-import type { ModelId } from "./ai-chat-config";
 
 interface AiChatComposerProps {
   className?: string;
@@ -24,7 +22,6 @@ export function AiChatComposer({
   isStreaming = false,
 }: AiChatComposerProps) {
   const [message, setMessage] = useState("");
-  const [modelId, setModelId] = useState<ModelId>("gpt-5.4");
 
   const canSend = message.trim().length > 0 && !isStreaming;
 
@@ -66,7 +63,6 @@ export function AiChatComposer({
         </div>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <AiChatModelMenu modelId={modelId} onModelChange={setModelId} />
           {isStreaming ? (
             <Button
               type="button"

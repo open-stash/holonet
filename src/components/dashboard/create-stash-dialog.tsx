@@ -22,14 +22,28 @@ import {
   fileContentType,
 } from "@/components/dashboard/stash/stash-upload-panel";
 import type { StashMode } from "@/components/dashboard/stash/stash-dialog-types";
-import { useCollectionsStore, useSettingsStore, useStashStore } from "@source/stores";
+import {
+  useCollectionsStore,
+  useSettingsStore,
+  useSourcesStore,
+  useStashStore,
+} from "@source/stores";
 import {
   createSource,
   presignUpload,
   uploadFileToS3,
   confirmUpload,
 } from "@/lib/api/kyber";
+import type { SourceType } from "@/components/dashboard/mock";
 import { isValidStashUrl, normalizeStashUrl } from "@/lib/validations/url";
+
+// Map an uploaded file's extension to a source card type, for the optimistic card.
+function inferUploadType(filename: string): SourceType {
+  const ext = filename.split(".").pop()?.toLowerCase() ?? "";
+  if (ext === "pdf") return "pdf";
+  if (ext === "ppt" || ext === "pptx") return "ppt";
+  return "doc";
+}
 
 const emptyLinkForm = (): StashLinkFormState => ({
   url: "",
@@ -99,11 +113,12 @@ export function CreateStashDialog() {
       if (!noteBody.trim() || noteBody.length > NOTE_MAX_CHARS) return;
       setSubmitting(true);
       try {
-        await createSource({
+        const newNote = await createSource({
           collection_id: selectedCollectionId,
           type: "note",
           content: noteBody,
         });
+        useSourcesStore.getState().addSourceOptimistic(newNote);
         void useCollectionsStore.getState().fetchCollections();
         closeWithSuccess("Note saved to your stash");
       } catch (err) {
@@ -120,11 +135,13 @@ export function CreateStashDialog() {
       if (!isValidStashUrl(linkForm.url)) return;
       setSubmitting(true);
       try {
-        await createSource({
+        const newLink = await createSource({
           collection_id: selectedCollectionId,
           type: "link",
           original_url: normalizeStashUrl(linkForm.url),
         });
+        // Show the card immediately (status "pending"); the poll fills the thumbnail.
+        useSourcesStore.getState().addSourceOptimistic(newLink);
         // Refresh collections so the sidebar item_count reflects the new source
         void useCollectionsStore.getState().fetchCollections();
         closeWithSuccess("Link saved to your stash");
@@ -160,6 +177,16 @@ export function CreateStashDialog() {
         });
         await uploadFileToS3(presigned.upload_url, file, contentType);
         await confirmUpload(presigned.source_id);
+        // Optimistic card (we only get source_id back from confirm); poll reconciles.
+        useSourcesStore.getState().addSourceOptimistic({
+          id: presigned.source_id,
+          user_id: "",
+          collection_id: selectedCollectionId,
+          type: inferUploadType(file.name),
+          status: "pending",
+          title: uploadForm.title.trim() || file.name,
+          created_at: new Date().toISOString(),
+        });
         ok += 1;
       } catch {
         failed.push(file.name);
