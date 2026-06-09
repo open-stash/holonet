@@ -14,9 +14,9 @@ export interface UserSettings {
 }
 
 export const defaultUserSettings: UserSettings = {
-  displayName: "Alkush Pipania",
-  email: "alkushpipania2006@gmail.com",
-  organization: "Alkush Pipania",
+  displayName: "",
+  email: "",
+  organization: "",
   collectionViewMode: "cards",
   defaultStashMode: "note",
   confirmBeforeDelete: true,

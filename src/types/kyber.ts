@@ -1,3 +1,6 @@
+export type SourceType = "link" | "note" | "pdf" | "ppt" | "doc";
+export type SourceStatus = "pending" | "processing" | "indexed" | "failed";
+
 export interface Collection {
   id: string;
   user_id: string;
@@ -12,8 +15,8 @@ export interface Source {
   id: string;
   user_id: string;
   collection_id: string;
-  type: "link" | "note" | "pdf" | "ppt" | "doc";
-  status: "pending" | "processing" | "indexed" | "failed";
+  type: SourceType;
+  status: SourceStatus;
   title: string;
   original_url?: string;
   image_url?: string;

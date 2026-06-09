@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { loginSchema, type LoginFormValues } from "@/lib/validations/auth";
 import { loginUser } from "@/lib/api/auth";
 import { SentinelApiError } from "@/lib/api/sentinel";
+import { useSettingsStore } from "@source/stores";
 
 export function LoginForm() {
   const router = useRouter();
@@ -38,6 +39,7 @@ export function LoginForm() {
       }
 
       localStorage.setItem("access_token", result.access_token);
+      useSettingsStore.getState().setEmail(result.user.email);
       router.push("/dashboard");
     } catch (err) {
       toast.error("Sign in failed", {

@@ -5,7 +5,7 @@ import {
   Presentation,
   type LucideIcon,
 } from "lucide-react";
-import type { MockSource, SourceType } from "@/components/dashboard/mock";
+import type { Source, SourceType } from "@/types/kyber";
 
 export const SOURCE_TYPE_ORDER: SourceType[] = [
   "link",
@@ -31,7 +31,7 @@ export const typeIcon: Record<SourceType, LucideIcon> = {
   doc: FileType2,
 };
 
-export function sourceTitle(source: MockSource) {
+export function sourceTitle(source: Source) {
   if (source.title.trim()) return source.title;
 
   if (source.original_url) {
@@ -45,7 +45,7 @@ export function sourceTitle(source: MockSource) {
   return "Untitled";
 }
 
-export function sourceDomain(source: MockSource) {
+export function sourceDomain(source: Source) {
   if (!source.original_url) return null;
   try {
     return new URL(source.original_url).hostname.replace(/^www\./, "");
@@ -58,24 +58,20 @@ export function faviconUrl(domain: string) {
   return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=32`;
 }
 
-export function mockPageCount(source: MockSource) {
+// Decorative page/slide counts for document cards when the API doesn't return metadata yet.
+export function estimatedPageCount(source: Source) {
   let hash = 0;
   for (const char of source.id) hash += char.charCodeAt(0);
   return 24 + (hash % 180);
 }
 
-export function mockSlideCount(source: MockSource) {
+export function estimatedSlideCount(source: Source) {
   let hash = 0;
   for (const char of source.id) hash += char.charCodeAt(0);
   return 6 + (hash % 28);
 }
 
-export function noteSnippet(source: MockSource) {
-  const lead = source.title.trim() || "Untitled note";
-  return `${lead} — key decisions, open questions, and follow-ups from the session. Share the summary with the team and schedule the next checkpoint when ready.`;
-}
-
-export function sourceSubtitle(source: MockSource) {
+export function sourceSubtitle(source: Source) {
   if (source.type === "link" && source.original_url) {
     return source.original_url;
   }
@@ -83,8 +79,8 @@ export function sourceSubtitle(source: MockSource) {
   return typeLabel[source.type];
 }
 
-export function groupSourcesByType(sources: MockSource[]) {
-  const groups = new Map<SourceType, MockSource[]>();
+export function groupSourcesByType(sources: Source[]) {
+  const groups = new Map<SourceType, Source[]>();
 
   for (const type of SOURCE_TYPE_ORDER) {
     groups.set(type, []);

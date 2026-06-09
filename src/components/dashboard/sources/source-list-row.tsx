@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { MockSource } from "@/components/dashboard/mock";
+import type { Source } from "@/types/kyber";
 import { cn } from "@/lib/utils";
 import {
   sourceSubtitle,
@@ -11,7 +11,7 @@ import {
 } from "./source-helpers";
 
 interface SourceListRowProps {
-  source: MockSource;
+  source: Source;
 }
 
 export function SourceListRow({ source }: SourceListRowProps) {
@@ -20,7 +20,7 @@ export function SourceListRow({ source }: SourceListRowProps) {
   const title = sourceTitle(source);
   const subtitle = sourceSubtitle(source);
   // Real thumbnail: link OG image or rendered PDF first page (kyber image_url).
-  const previewURL = source.image_url ?? source.preview_image_url;
+  const previewURL = source.image_url;
   const showPreview = !!previewURL && !previewBroken;
 
   return (

@@ -14,8 +14,6 @@ function initialsFromName(name: string) {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
-const MEMBER_SINCE = "May 2026";
-
 export function ProfileDetailsCard() {
   const hydrated = useSettingsStore((state) => state.hydrated);
   const displayName = useSettingsStore((state) => state.displayName);
@@ -57,7 +55,9 @@ export function ProfileDetailsCard() {
         </div>
         <div className="min-w-0 flex-1">
           <h3 className="text-base font-semibold text-slate-900">{name}</h3>
-          <p className="mt-0.5 text-sm text-slate-500">{email}</p>
+          {email ? (
+            <p className="mt-0.5 text-sm text-slate-500">{email}</p>
+          ) : null}
         </div>
       </div>
 
@@ -113,12 +113,6 @@ export function ProfileDetailsCard() {
           )}
         </div>
 
-        <div className="min-w-0">
-          <p className="text-xs font-medium text-slate-500">Member since</p>
-          <p className="mt-1.5 text-sm font-medium text-slate-900">
-            {MEMBER_SINCE}
-          </p>
-        </div>
       </div>
     </section>
   );

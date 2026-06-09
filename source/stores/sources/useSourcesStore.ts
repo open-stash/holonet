@@ -1,17 +1,11 @@
 import { create } from "zustand";
-import {
-  mockSources,
-  type MockSource,
-  type SourceType,
-} from "@/components/dashboard/mock";
+import type { Source } from "@/types/kyber";
 import {
   getSourcesByCollection,
   deleteSource as apiDeleteSource,
   moveSource as apiMoveSource,
 } from "@/lib/api/kyber";
 import { useCollectionsStore } from "../collections/useCollectionsStore";
-
-export type SourceTypeFilter = "all" | SourceType;
 
 // Refresh collections so sidebar item_count reflects source add/remove/move.
 function refreshCollectionCounts() {
@@ -30,14 +24,10 @@ const deletingIds = new Set<string>();
 const DELETE_PURGE_MS = 30_000;
 
 interface SourcesStore {
-  items: MockSource[];
+  items: Source[];
   total: number;
   loading: boolean;
-  page: number;
-  limit: number;
-  typeFilter: SourceTypeFilter;
   moveTargetId: string | null;
-  fetchSources: () => Promise<void>;
   fetchByCollection: (
     collectionId: string,
     limit: number,
@@ -45,35 +35,18 @@ interface SourcesStore {
     silent?: boolean
   ) => Promise<void>;
   refreshCurrentPage: (silent?: boolean) => Promise<void>;
-  addSourceOptimistic: (source: MockSource) => void;
-  setPage: (page: number) => void;
-  setLimit: (limit: number) => void;
-  setTypeFilter: (filter: SourceTypeFilter) => void;
+  addSourceOptimistic: (source: Source) => void;
   openMoveDialog: (sourceId: string) => void;
   closeMoveDialog: () => void;
   moveSourceToCollection: (sourceId: string, collectionId: string) => Promise<void>;
   removeSource: (sourceId: string) => Promise<void>;
-  getFilteredSources: () => MockSource[];
-  getPaginatedSources: () => MockSource[];
-  getTotal: () => number;
-  getTotalPages: () => number;
 }
 
 export const useSourcesStore = create<SourcesStore>((set, get) => ({
-  items: mockSources,
+  items: [],
   total: 0,
   loading: false,
-  page: 1,
-  limit: 12,
-  typeFilter: "all",
   moveTargetId: null,
-
-  fetchSources: async () => {
-    // API seam: replace this mock hydration with kyber fetch later.
-    set({ loading: true });
-    await Promise.resolve();
-    set({ items: mockSources, loading: false });
-  },
 
   fetchByCollection: async (collectionId, limit, offset, silent = false) => {
     lastQuery = { collectionId, limit, offset };
@@ -82,7 +55,6 @@ export const useSourcesStore = create<SourcesStore>((set, get) => ({
     if (!silent) set({ loading: true });
     try {
       const { items, total } = await getSourcesByCollection(collectionId, limit, offset);
-      // kyber's Source is structurally assignable to MockSource (preview_image_url optional).
       // Drop any rows still mid-deletion so they don't reappear; correct the count
       // for the ones we hid on this page.
       const visible =
@@ -118,20 +90,6 @@ export const useSourcesStore = create<SourcesStore>((set, get) => ({
       lastQuery.offset,
       silent
     );
-  },
-
-  setPage: (page) => {
-    const nextPage = Math.max(1, page);
-    const totalPages = get().getTotalPages();
-    set({ page: Math.min(nextPage, totalPages || 1) });
-  },
-
-  setLimit: (limit) => {
-    set({ limit, page: 1 });
-  },
-
-  setTypeFilter: (typeFilter) => {
-    set({ typeFilter, page: 1 });
   },
 
   openMoveDialog: (sourceId) => set({ moveTargetId: sourceId }),
@@ -186,30 +144,5 @@ export const useSourcesStore = create<SourcesStore>((set, get) => ({
       set({ items: prev, total: prevTotal }); // revert
       throw err;
     }
-  },
-
-  getFilteredSources: () => {
-    const { items, typeFilter } = get();
-
-    return items
-      .filter((source) => typeFilter === "all" || source.type === typeFilter)
-      .sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-  },
-
-  getPaginatedSources: () => {
-    const { page, limit, getFilteredSources } = get();
-    const filtered = getFilteredSources();
-    const start = (page - 1) * limit;
-    return filtered.slice(start, start + limit);
-  },
-
-  getTotal: () => get().getFilteredSources().length,
-
-  getTotalPages: () => {
-    const { limit, getTotal } = get();
-    return Math.max(1, Math.ceil(getTotal() / limit));
   },
 }));

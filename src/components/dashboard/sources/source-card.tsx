@@ -2,13 +2,12 @@
 
 import { useState, type ReactNode } from "react";
 import { FileText, ImageIcon, Link2 } from "lucide-react";
-import type { MockSource } from "@/components/dashboard/mock";
+import type { Source } from "@/types/kyber";
 import { cn } from "@/lib/utils";
 import {
+  estimatedPageCount,
+  estimatedSlideCount,
   faviconUrl,
-  mockPageCount,
-  mockSlideCount,
-  noteSnippet,
   sourceDomain,
   sourceTitle,
   typeIcon,
@@ -18,7 +17,7 @@ import { SourceCardMenu } from "./source-card-menu";
 import { SourceTypeTag } from "./source-type-tag";
 
 interface SourceCardProps {
-  source: MockSource;
+  source: Source;
 }
 
 // Shared shell for white (link / pdf / doc / slide) cards — soft border, depth,
@@ -31,7 +30,7 @@ function SourceCardShell({
   className,
   children,
 }: {
-  source: MockSource;
+  source: Source;
   className?: string;
   children: ReactNode;
 }) {
@@ -45,7 +44,7 @@ function SourceCardShell({
 
 // True while the async worker is still scraping/embedding the source — the
 // thumbnail isn't available yet, so we show a "fetching preview" affordance.
-function isProcessing(source: MockSource) {
+function isProcessing(source: Source) {
   return source.status === "pending" || source.status === "processing";
 }
 
@@ -87,8 +86,7 @@ function LinkCard({ source }: SourceCardProps) {
   const Icon = typeIcon.link;
   const title = sourceTitle(source);
   const domain = sourceDomain(source);
-  // Real scraped OG image from kyber; preview_image_url kept for mock compatibility.
-  const previewURL = source.image_url ?? source.preview_image_url;
+  const previewURL = source.image_url;
   const showPreview = !!previewURL && !previewBroken;
   const processing = isProcessing(source) && !showPreview;
 
@@ -132,7 +130,6 @@ function LinkCard({ source }: SourceCardProps) {
 function NoteCard({ source }: SourceCardProps) {
   const Icon = typeIcon.note;
   const title = sourceTitle(source);
-  const snippet = noteSnippet(source);
 
   return (
     <SourceCardShell
@@ -142,10 +139,9 @@ function NoteCard({ source }: SourceCardProps) {
       <div className="mb-2.5">
         <SourceTypeTag icon={Icon} label={typeLabel.note} floating={false} />
       </div>
-      <h3 className="mb-2 line-clamp-1 text-[14px] font-semibold tracking-[-0.01em] text-[#4a3f24]">
+      <h3 className="line-clamp-4 text-[14px] font-semibold leading-relaxed tracking-[-0.01em] text-[#4a3f24]">
         {title}
       </h3>
-      <p className="line-clamp-6 text-[12.5px] leading-relaxed text-[#7a6c4a]">{snippet}</p>
     </SourceCardShell>
   );
 }
@@ -209,7 +205,7 @@ function PdfCard({ source }: SourceCardProps) {
   const [thumbBroken, setThumbBroken] = useState(false);
   const Icon = typeIcon.pdf;
   const title = sourceTitle(source);
-  const pages = mockPageCount(source);
+  const pages = estimatedPageCount(source);
   const showThumb = !!source.image_url && !thumbBroken;
   const processing = isProcessing(source) && !showThumb;
 
@@ -254,7 +250,7 @@ function PdfCard({ source }: SourceCardProps) {
 function DocCard({ source }: SourceCardProps) {
   const Icon = typeIcon.doc;
   const title = sourceTitle(source);
-  const pages = mockPageCount(source);
+  const pages = estimatedPageCount(source);
 
   return (
     <SourceCardShell
@@ -283,7 +279,7 @@ function DocCard({ source }: SourceCardProps) {
 function SlideCard({ source }: SourceCardProps) {
   const Icon = typeIcon.ppt;
   const title = sourceTitle(source);
-  const slides = mockSlideCount(source);
+  const slides = estimatedSlideCount(source);
 
   return (
     <SourceCardShell

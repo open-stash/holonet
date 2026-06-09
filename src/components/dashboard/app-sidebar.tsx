@@ -67,59 +67,49 @@ export function AppSidebar() {
       <RenameCollectionDialog />
       <BinDialog open={binOpen} onOpenChange={setBinOpen} />
       <SidebarHeader className="group-data-[collapsible=icon]:p-1">
-        <div
-          className={
-            isExpanded
-              ? "flex items-center gap-1 px-2 py-1.5"
-              : "flex flex-col items-center gap-1.5 p-1"
-          }
-        >
-          <div
-            className={
-              isExpanded
-                ? "flex min-w-0 flex-1 items-center gap-2.5"
-                : "flex items-center justify-center"
-            }
-          >
-            <Link
-              href="/dashboard"
-              aria-label="Open Stash home"
-              className="flex size-8 shrink-0 items-center justify-center rounded-md outline-hidden ring-sidebar-ring focus-visible:ring-2"
-            >
-              <Image
-                src="/logo.svg"
-                alt=""
-                width={32}
-                height={32}
-                priority
-                className="size-8 shrink-0 rounded-lg"
-              />
-            </Link>
-            <AnimatePresence initial={false} mode="popLayout">
-              {isExpanded && (
-                <motion.div
-                  key="brand-copy"
-                  initial={{ opacity: 0, x: -10, filter: "blur(4px)" }}
-                  animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, x: -10, filter: "blur(4px)" }}
-                  transition={textTransition}
-                  className="min-w-0 overflow-x-hidden"
+        <div className="flex items-center gap-1 px-2 py-1.5 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-1">
+          {isExpanded ? (
+            <>
+              <div className="flex min-w-0 flex-1 items-center gap-2.5">
+                <Link
+                  href="/dashboard"
+                  aria-label="Open Stash home"
+                  className="flex size-8 shrink-0 items-center justify-center rounded-md outline-hidden ring-sidebar-ring focus-visible:ring-2"
                 >
-                  <Link
-                    href="/dashboard"
-                    className="block min-w-0 rounded-md outline-hidden ring-sidebar-ring focus-visible:ring-2"
+                  <Image
+                    src="/logo.svg"
+                    alt=""
+                    width={32}
+                    height={32}
+                    priority
+                    className="size-8 shrink-0 rounded-lg"
+                  />
+                </Link>
+                <AnimatePresence initial={false} mode="popLayout">
+                  <motion.div
+                    key="brand-copy"
+                    initial={{ opacity: 0, x: -10, filter: "blur(4px)" }}
+                    animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                    exit={{ opacity: 0, x: -10, filter: "blur(4px)" }}
+                    transition={textTransition}
+                    className="min-w-0 overflow-x-hidden"
                   >
-                    <span className="block truncate text-sm font-semibold leading-5">
-                      Open Stash
-                    </span>
-                  </Link>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          <SidebarTrigger
-            className={isExpanded ? "ml-auto shrink-0" : "shrink-0"}
-          />
+                    <Link
+                      href="/dashboard"
+                      className="block min-w-0 rounded-md outline-hidden ring-sidebar-ring focus-visible:ring-2"
+                    >
+                      <span className="block truncate text-sm font-semibold leading-5">
+                        Open Stash
+                      </span>
+                    </Link>
+                  </motion.div>
+                </AnimatePresence>
+              </div>
+              <SidebarTrigger className="ml-auto shrink-0" />
+            </>
+          ) : (
+            <SidebarTrigger className="shrink-0" />
+          )}
         </div>
       </SidebarHeader>
 

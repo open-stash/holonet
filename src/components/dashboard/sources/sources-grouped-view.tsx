@@ -1,12 +1,12 @@
 "use client";
 
-import type { MockSource } from "@/components/dashboard/mock";
+import type { Source } from "@/types/kyber";
 import { groupSourcesByType, typeLabel } from "./source-helpers";
 import { SourceCard } from "./source-card";
 import { SourcesEmpty } from "./sources-empty";
 
 interface SourcesGroupedViewProps {
-  sources: MockSource[];
+  sources: Source[];
 }
 
 export function SourcesGroupedView({ sources }: SourcesGroupedViewProps) {

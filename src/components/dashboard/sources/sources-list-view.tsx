@@ -1,13 +1,13 @@
 "use client";
 
-import type { MockSource } from "@/components/dashboard/mock";
+import type { Source } from "@/types/kyber";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SourceListRow } from "./source-list-row";
 import { SourcesEmpty } from "./sources-empty";
 
 interface SourcesListViewProps {
   loading: boolean;
-  sources: MockSource[];
+  sources: Source[];
 }
 
 export function SourcesListView({ loading, sources }: SourcesListViewProps) {

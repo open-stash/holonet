@@ -2,7 +2,7 @@
 
 import { Copy, FolderInput, MoreHorizontal, Trash2 } from "lucide-react";
 import { toast } from "sonner";
-import type { MockSource } from "@/components/dashboard/mock";
+import type { Source } from "@/types/kyber";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,7 +15,7 @@ import { useSettingsStore, useSourcesStore } from "@source/stores";
 import { sourceTitle } from "./source-helpers";
 
 interface SourceCardMenuProps {
-  source: MockSource;
+  source: Source;
   className?: string;
 }
 

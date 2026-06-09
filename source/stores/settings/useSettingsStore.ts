@@ -72,6 +72,7 @@ interface SettingsStore extends UserSettings {
   hydrated: boolean;
   hydrate: () => void;
   setDisplayName: (displayName: string) => void;
+  setEmail: (email: string) => void;
   setOrganization: (organization: string) => void;
   setCollectionViewMode: (mode: CollectionViewMode) => void;
   setDefaultStashMode: (mode: StashMode) => void;
@@ -92,6 +93,11 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   setDisplayName: (displayName) => {
     set({ displayName });
     persistSettings(pickSettings({ ...get(), displayName }));
+  },
+
+  setEmail: (email) => {
+    set({ email });
+    persistSettings(pickSettings({ ...get(), email }));
   },
 
   setOrganization: (organization) => {

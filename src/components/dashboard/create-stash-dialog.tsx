@@ -34,7 +34,7 @@ import {
   uploadFileToS3,
   confirmUpload,
 } from "@/lib/api/kyber";
-import type { SourceType } from "@/components/dashboard/mock";
+import type { SourceType } from "@/types/kyber";
 import { isValidStashUrl, normalizeStashUrl } from "@/lib/validations/url";
 
 // Map an uploaded file's extension to a source card type, for the optimistic card.

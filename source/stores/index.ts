@@ -12,10 +12,7 @@ export { useSearchStore } from "./search/useSearchStore";
 
 export { useStashStore } from "./stash/useStashStore";
 
-export {
-  useSourcesStore,
-  type SourceTypeFilter,
-} from "./sources/useSourcesStore";
+export { useSourcesStore } from "./sources/useSourcesStore";
 
 export { useSettingsStore } from "./settings/useSettingsStore";
 export type {

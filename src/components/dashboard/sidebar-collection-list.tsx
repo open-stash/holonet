@@ -12,7 +12,13 @@ import {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface SidebarCollectionListProps {
   label: string;
@@ -31,6 +37,7 @@ export function SidebarCollectionList({
   alwaysShowHeader = false,
   onAdd,
 }: SidebarCollectionListProps) {
+  const { state, isMobile } = useSidebar();
   const prefersReducedMotion = useReducedMotion();
   const textTransition = prefersReducedMotion ? { duration: 0 } : sidebarTextSpring;
   const fadeTransition = prefersReducedMotion ? { duration: 0 } : sidebarFadeSpring;
@@ -40,36 +47,46 @@ export function SidebarCollectionList({
   return (
     <div className="mb-2 last:mb-0">
       {onAdd ? (
-        <button
-          type="button"
-          title="New collection"
-          onClick={onAdd}
-          className={cn(
-            "mb-1.5 flex w-full items-center justify-between gap-1 rounded-md px-2 py-1.5 text-left",
-            "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-            isExpanded ? "justify-between" : "justify-center px-1"
-          )}
-        >
-          <motion.span
-            initial={false}
-            animate={{
-              opacity: isExpanded ? 1 : 0,
-              maxWidth: isExpanded ? 160 : 0,
-            }}
-            transition={textTransition}
-            className="overflow-hidden text-xs font-medium text-muted-foreground whitespace-nowrap"
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              type="button"
+              onClick={onAdd}
+              className={cn(
+                "mb-1.5 flex w-full items-center justify-between gap-1 rounded-md px-2 py-1.5 text-left",
+                "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                isExpanded ? "justify-between" : "justify-center px-1"
+              )}
+            >
+              <motion.span
+                initial={false}
+                animate={{
+                  opacity: isExpanded ? 1 : 0,
+                  maxWidth: isExpanded ? 160 : 0,
+                }}
+                transition={textTransition}
+                className="overflow-hidden text-xs font-medium text-muted-foreground whitespace-nowrap"
+              >
+                {label}
+              </motion.span>
+              <motion.div
+                initial={false}
+                animate={{ scale: isExpanded ? 1 : 1.05 }}
+                transition={textTransition}
+              >
+                <Plus className="size-4 shrink-0 opacity-70" />
+              </motion.div>
+              <span className="sr-only">New collection</span>
+            </button>
+          </TooltipTrigger>
+          <TooltipContent
+            side="right"
+            align="center"
+            hidden={state !== "collapsed" || isMobile}
           >
-            {label}
-          </motion.span>
-          <motion.div
-            initial={false}
-            animate={{ scale: isExpanded ? 1 : 1.05 }}
-            transition={textTransition}
-          >
-            <Plus className="size-4 shrink-0 opacity-70" />
-          </motion.div>
-          <span className="sr-only">New collection</span>
-        </button>
+            New collection
+          </TooltipContent>
+        </Tooltip>
       ) : (
         <motion.p
           initial={false}

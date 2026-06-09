@@ -1,6 +1,6 @@
 "use client";
 
-import type { MockSource } from "@/components/dashboard/mock";
+import type { Source } from "@/types/kyber";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SourceCard } from "./source-card";
 import { SourcesEmpty } from "./sources-empty";
@@ -10,7 +10,7 @@ const masonryClass =
 
 interface SourcesGridProps {
   loading: boolean;
-  sources: MockSource[];
+  sources: Source[];
 }
 
 export function SourcesGrid({ loading, sources }: SourcesGridProps) {

@@ -6,7 +6,7 @@ import { FolderOpen } from "lucide-react";
 import { useCollectionsStore, useSourcesStore } from "@source/stores";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import type { MockSource } from "@/components/dashboard/mock";
+import type { Source } from "@/types/kyber";
 import { SourcesGrid } from "./sources-grid";
 import { SourcesGroupedView } from "./sources-grouped-view";
 import { SourcesListView } from "./sources-list-view";
@@ -26,7 +26,7 @@ function CollectionSourcesContent({
 }: {
   loading: boolean;
   viewMode: ReturnType<typeof useCollectionViewMode>["viewMode"];
-  sources: MockSource[];
+  sources: Source[];
 }) {
   if (loading) {
     if (viewMode === "list") {
