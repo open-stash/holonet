@@ -34,10 +34,8 @@ export function AiChatView() {
 
   return (
     <main className="flex min-h-0 flex-1 flex-col">
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <AiChatMessages messages={messages} isReplying={isReplying} />
-      </div>
-      <div className="shrink-0 bg-white/80 px-6 py-4">
+      <AiChatMessages messages={messages} isReplying={isReplying} />
+      <div className="shrink-0 bg-white/80 px-6 py-4 backdrop-blur">
         <AiChatComposer
           className="mx-auto w-full max-w-xl"
           onSend={sendMessage}

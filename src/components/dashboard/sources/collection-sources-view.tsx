@@ -141,7 +141,7 @@ export function CollectionSourcesView({ collectionID }: CollectionSourcesViewPro
   }
 
   return (
-    <main className="flex flex-1 flex-col gap-5 p-6">
+    <main className="flex min-h-0 flex-1 flex-col gap-5 p-6">
       <SourcesToolbar
         title={collection.name}
         subtitle={`${total} source${total === 1 ? "" : "s"} in this collection.`}
@@ -150,39 +150,39 @@ export function CollectionSourcesView({ collectionID }: CollectionSourcesViewPro
         onViewModeChange={setViewMode}
       />
 
-      {!hydrated ? (
-        <section className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
-          {Array.from({ length: 6 }).map((_, index) => (
-            <div
-              key={`hydrate-skeleton-${index}`}
-              className="overflow-hidden rounded-xl border border-slate-200/80 bg-white"
-            >
-              <Skeleton className="aspect-video w-full rounded-none" />
-              <div className="space-y-2 p-3.5">
-                <Skeleton className="h-4 w-full rounded" />
-                <Skeleton className="h-4 w-2/3 rounded" />
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        {!hydrated ? (
+          <section className="grid gap-3 grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={`hydrate-skeleton-${index}`}
+                className="overflow-hidden rounded-xl border border-slate-200/80 bg-white"
+              >
+                <Skeleton className="aspect-video w-full rounded-none" />
+                <div className="space-y-2 p-3.5">
+                  <Skeleton className="h-4 w-full rounded" />
+                  <Skeleton className="h-4 w-2/3 rounded" />
+                </div>
               </div>
-            </div>
-          ))}
-        </section>
-      ) : (
-        <CollectionSourcesContent
-          loading={loading}
-          viewMode={viewMode}
-          sources={paginatedSources}
-        />
-      )}
-
-      <div className="mt-auto">
-        <SourcesPagination
-          page={clampedPage}
-          totalPages={totalPages}
-          total={total}
-          limit={limit}
-          onLimitChange={handleLimitChange}
-          onPageChange={setPage}
-        />
+            ))}
+          </section>
+        ) : (
+          <CollectionSourcesContent
+            loading={loading}
+            viewMode={viewMode}
+            sources={paginatedSources}
+          />
+        )}
       </div>
+
+      <SourcesPagination
+        page={clampedPage}
+        totalPages={totalPages}
+        total={total}
+        limit={limit}
+        onLimitChange={handleLimitChange}
+        onPageChange={setPage}
+      />
     </main>
   );
 }

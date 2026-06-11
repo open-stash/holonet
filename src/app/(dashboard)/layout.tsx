@@ -6,7 +6,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex h-dvh w-full overflow-hidden">
       <DashboardShell>{children}</DashboardShell>
     </div>
   );
