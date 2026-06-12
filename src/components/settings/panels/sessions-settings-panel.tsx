@@ -1,9 +1,11 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Laptop, Loader2, Monitor, Smartphone } from "lucide-react";
+import { Laptop, LogOut, Monitor, Smartphone } from "lucide-react";
 import { toast } from "sonner";
 import { SettingsPageHeader } from "@/components/settings/settings-page-header";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   getSessions,
   revokeOtherSessions,
@@ -12,11 +14,19 @@ import {
 } from "@/lib/api/sessions";
 import { cn } from "@/lib/utils";
 
+const cardClass =
+  "rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04)]";
+
 function deviceIcon(device: string) {
   const d = device.toLowerCase();
   if (/(mobile|phone|android|iphone)/.test(d)) return Smartphone;
   if (/(tablet|ipad)/.test(d)) return Monitor;
   return Laptop;
+}
+
+function sessionLabel(session: SessionInfo) {
+  const browser = session.browser || "Unknown browser";
+  return session.os ? `${browser} · ${session.os}` : browser;
 }
 
 function timeAgo(iso: string): string {
@@ -31,6 +41,116 @@ function timeAgo(iso: string): string {
   const days = Math.floor(hrs / 24);
   if (days < 30) return `${days}d ago`;
   return new Date(iso).toLocaleDateString();
+}
+
+function DeviceIconBox({ icon: Icon }: { icon: typeof Laptop }) {
+  return (
+    <span className="flex size-12 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-slate-50 text-slate-600 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+      <Icon className="size-5" />
+    </span>
+  );
+}
+
+function SessionRowSkeleton({ withAction = false }: { withAction?: boolean }) {
+  return (
+    <li className={cn("flex items-center gap-4 p-5", !withAction && "border-b border-slate-100 last:border-0")}>
+      <Skeleton className="size-12 shrink-0 rounded-xl bg-slate-100" />
+      <div className="min-w-0 flex-1 space-y-2.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <Skeleton className="h-4 w-40 max-w-[70%] rounded bg-slate-100" />
+          {!withAction && (
+            <Skeleton className="h-5 w-20 shrink-0 rounded-full bg-slate-100" />
+          )}
+        </div>
+        <Skeleton className="h-3 w-28 rounded bg-slate-100" />
+      </div>
+      {withAction ? (
+        <Skeleton className="h-8 w-20 shrink-0 rounded-lg bg-slate-100" />
+      ) : null}
+    </li>
+  );
+}
+
+function SessionsListSkeleton() {
+  return (
+    <div className={cn(cardClass, "overflow-hidden")} aria-busy="true" aria-label="Loading sessions">
+      <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
+        <Skeleton className="h-3.5 w-28 rounded bg-slate-100" />
+      </div>
+      <ul>
+        <SessionRowSkeleton />
+        <SessionRowSkeleton withAction />
+      </ul>
+    </div>
+  );
+}
+
+function SessionRow({
+  session,
+  busy,
+  onRevoke,
+}: {
+  session: SessionInfo;
+  busy: string | null;
+  onRevoke: (id: string) => void;
+}) {
+  const Icon = deviceIcon(session.device);
+  const isCurrent = session.current;
+
+  return (
+    <li
+      className={cn(
+        "relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center",
+        "border-b border-slate-100 last:border-0",
+        isCurrent && "bg-emerald-50/30"
+      )}
+    >
+      {isCurrent && (
+        <span
+          className="absolute inset-y-0 left-0 w-0.5 rounded-r bg-emerald-500"
+          aria-hidden
+        />
+      )}
+
+      <div className="flex min-w-0 flex-1 items-start gap-4">
+        <DeviceIconBox icon={Icon} />
+        <div className="min-w-0 flex-1 pt-0.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="text-sm font-semibold text-slate-900">
+              {sessionLabel(session)}
+            </p>
+            {isCurrent && (
+              <span className="inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-600/10 ring-inset">
+                This device
+              </span>
+            )}
+          </div>
+          <p className="mt-1 text-xs text-slate-500">
+            {isCurrent ? "Active now" : `Last active ${timeAgo(session.last_seen)}`}
+          </p>
+        </div>
+      </div>
+
+      {isCurrent ? (
+        <span className="inline-flex shrink-0 items-center gap-1.5 self-start rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-medium text-emerald-700 ring-1 ring-emerald-600/10 ring-inset sm:self-center">
+          <span className="size-1.5 rounded-full bg-emerald-500" aria-hidden />
+          Online
+        </span>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          disabled={busy !== null}
+          onClick={() => onRevoke(session.id)}
+          className="h-8 shrink-0 self-start rounded-lg text-red-600 hover:bg-red-50 hover:text-red-700 sm:self-center"
+        >
+          <LogOut className="size-3.5" />
+          {busy === session.id ? "Signing out…" : "Sign out"}
+        </Button>
+      )}
+    </li>
+  );
 }
 
 export function SessionsSettingsPanel() {
@@ -76,7 +196,10 @@ export function SessionsSettingsPanel() {
     }
   }
 
-  const hasOthers = (sessions ?? []).some((s) => !s.current);
+  const list = [...(sessions ?? [])].sort(
+    (a, b) => Number(b.current) - Number(a.current)
+  );
+  const hasOthers = list.some((s) => !s.current);
 
   return (
     <div className="flex flex-1 flex-col p-8">
@@ -85,67 +208,55 @@ export function SessionsSettingsPanel() {
         description="Devices currently signed in to your account. Revoke any you don't recognise."
       />
 
-      <div className="flex max-w-2xl flex-col gap-3">
+      <div className="flex max-w-2xl flex-col gap-4">
         {sessions === null ? (
-          <div className="flex items-center gap-2 py-10 text-sm text-slate-500">
-            <Loader2 className="size-4 animate-spin" /> Loading sessions…
+          <SessionsListSkeleton />
+        ) : list.length === 0 ? (
+          <div
+            className={cn(
+              cardClass,
+              "flex flex-col items-center border-dashed bg-slate-50/50 px-6 py-12 text-center"
+            )}
+          >
+            <span className="mb-3 flex size-12 items-center justify-center rounded-xl border border-slate-200/80 bg-white text-slate-400 shadow-[0_1px_2px_rgba(15,23,42,0.04)]">
+              <Laptop className="size-5" />
+            </span>
+            <p className="text-sm font-medium text-slate-700">No active sessions</p>
+            <p className="mt-1 max-w-xs text-xs text-slate-500">
+              When you sign in on a device, it will show up here.
+            </p>
           </div>
-        ) : sessions.length === 0 ? (
-          <p className="py-10 text-sm text-slate-500">No active sessions.</p>
         ) : (
           <>
-            <ul className="flex flex-col gap-2">
-              {sessions.map((s) => {
-                const Icon = deviceIcon(s.device);
-                return (
-                  <li
-                    key={s.id}
-                    className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-white p-4"
-                  >
-                    <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-slate-50 text-slate-500">
-                      <Icon className="size-5" />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-2">
-                        <p className="truncate text-sm font-medium text-slate-900">
-                          {s.browser || "Unknown browser"}
-                          {s.os ? ` · ${s.os}` : ""}
-                        </p>
-                        {s.current && (
-                          <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
-                            This device
-                          </span>
-                        )}
-                      </div>
-                      <p className="mt-0.5 flex items-center gap-1.5 truncate text-xs text-slate-500">
-                        active {timeAgo(s.last_seen)}
-                      </p>
-                    </div>
-                    {!s.current && (
-                      <button
-                        onClick={() => handleRevoke(s.id)}
-                        disabled={busy !== null}
-                        className={cn(
-                          "shrink-0 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors",
-                          "text-rose-600 hover:bg-rose-50 disabled:opacity-50"
-                        )}
-                      >
-                        {busy === s.id ? "Signing out…" : "Sign out"}
-                      </button>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
+            <div className={cn(cardClass, "overflow-hidden")}>
+              <div className="flex items-center justify-between border-b border-slate-100 px-5 py-3">
+                <p className="text-xs font-medium text-slate-500">
+                  {list.length} active {list.length === 1 ? "session" : "sessions"}
+                </p>
+              </div>
+              <ul>
+                {list.map((session) => (
+                  <SessionRow
+                    key={session.id}
+                    session={session}
+                    busy={busy}
+                    onRevoke={handleRevoke}
+                  />
+                ))}
+              </ul>
+            </div>
 
             {hasOthers && (
-              <button
-                onClick={handleRevokeOthers}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
                 disabled={busy !== null}
-                className="mt-2 self-start rounded-lg border border-slate-200 px-3.5 py-2 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 disabled:opacity-50"
+                onClick={handleRevokeOthers}
+                className="h-9 self-start rounded-lg border-slate-200 bg-white text-slate-700 shadow-none"
               >
                 {busy === "others" ? "Signing out…" : "Sign out of all other devices"}
-              </button>
+              </Button>
             )}
           </>
         )}

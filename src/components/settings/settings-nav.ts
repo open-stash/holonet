@@ -2,6 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   CircleHelp,
   CreditCard,
+  KeyRound,
   MonitorSmartphone,
   Plug,
   User,
@@ -24,6 +25,7 @@ export const settingsNavItems: SettingsNavItem[] = [
     label: "Connections & MCP",
     icon: Zap,
   },
+  { href: "/settings/api-keys", label: "Memory API keys", icon: KeyRound },
   { href: "/settings/support", label: "Support & Help", icon: CircleHelp },
 ];
 

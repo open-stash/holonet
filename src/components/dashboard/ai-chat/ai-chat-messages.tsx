@@ -64,7 +64,7 @@ export function AiChatMessages({ messages, isReplying }: AiChatMessagesProps) {
         onScroll={syncPinned}
         className="h-full overflow-y-auto overscroll-contain"
       >
-        <div className="mx-auto flex w-full max-w-xl flex-col gap-4 px-4 py-6">
+        <div className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-4 py-6">
           {messages.map((message, i) => (
             <AiChatMessage
               key={message.id}

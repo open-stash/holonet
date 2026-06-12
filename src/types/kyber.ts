@@ -7,6 +7,9 @@ export interface Collection {
   name: string;
   is_favorite: boolean;
   item_count: number;
+  // false for connector-managed collections (e.g. a synced Notion database) —
+  // the UI hides the delete affordance for these.
+  deletable: boolean;
   created_at: string;
   deleted_at?: string | null;
 }

@@ -1,10 +1,5 @@
-import { SettingsPlaceholder } from "@/components/settings/settings-placeholder";
+import { ConnectionsSettingsPanel } from "@/components/settings/panels/connections-settings-panel";
 
 export default function SettingsConnectionsPage() {
-  return (
-    <SettingsPlaceholder
-      title="Connections & MCP"
-      description="Connect knowledge bases and Model Context Protocol servers."
-    />
-  );
+  return <ConnectionsSettingsPanel />;
 }

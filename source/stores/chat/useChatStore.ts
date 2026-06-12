@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   createChatMessage,
   type ChatMessage,
+  type Citation,
 } from "@/components/dashboard/ai-chat/ai-chat-types";
 import { streamChat, type ChatHistoryTurn } from "@/lib/api/holocron";
 
@@ -23,15 +24,27 @@ let activeController: AbortController | null = null;
 interface ChatStore {
   messages: ChatMessage[];
   isReplying: boolean;
+  sourcesDrawerOpen: boolean;
+  sourcesDrawerCitations: Citation[];
 
   sendMessage: (text: string) => Promise<void>;
   stopGeneration: () => void;
   newChat: () => void;
+  openSourcesDrawer: (citations: Citation[]) => void;
+  closeSourcesDrawer: () => void;
 }
 
 export const useChatStore = create<ChatStore>((set, get) => ({
   messages: [],
   isReplying: false,
+  sourcesDrawerOpen: false,
+  sourcesDrawerCitations: [],
+
+  openSourcesDrawer: (citations) =>
+    set({ sourcesDrawerOpen: true, sourcesDrawerCitations: citations }),
+
+  closeSourcesDrawer: () =>
+    set({ sourcesDrawerOpen: false, sourcesDrawerCitations: [] }),
 
   sendMessage: async (text) => {
     const trimmed = text.trim();
@@ -142,6 +155,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 
   newChat: () => {
     activeController?.abort();
-    set({ messages: [], isReplying: false });
+    set({
+      messages: [],
+      isReplying: false,
+      sourcesDrawerOpen: false,
+      sourcesDrawerCitations: [],
+    });
   },
 }));

@@ -104,14 +104,17 @@ export function CollectionRowMenu({ collection }: CollectionRowMenuProps) {
           <Pencil />
           Rename
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          variant="destructive"
-          onSelect={handleMoveToBin}
-        >
-          <Trash2 />
-          Move to bin
-        </DropdownMenuItem>
+        {/* Connector-managed collections (e.g. synced Notion) can't be deleted —
+            disconnect the connector instead. */}
+        {collection.deletable !== false && (
+          <>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem variant="destructive" onSelect={handleMoveToBin}>
+              <Trash2 />
+              Move to bin
+            </DropdownMenuItem>
+          </>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
