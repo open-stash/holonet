@@ -11,12 +11,16 @@ export interface ChatHistoryTurn {
   content: string;
 }
 
+// Where chat retrieval looks. "best" = stash + memory + connections (default).
+export type SearchScope = "best" | "stash" | "memory";
+
 export interface Citation {
   source_id: string;
   title: string;
   type: string;
   url?: string;
   snippet?: string;
+  origin?: "stash" | "memory" | "graph";
 }
 
 export interface StreamHandlers {
@@ -89,7 +93,7 @@ function drainFrames(buffer: string, handlers: StreamHandlers): string {
  * `error` event via `handlers.onError`.
  */
 export async function streamChat(
-  body: { message: string; history: ChatHistoryTurn[] },
+  body: { message: string; history: ChatHistoryTurn[]; scope?: SearchScope },
   handlers: StreamHandlers,
   signal?: AbortSignal
 ): Promise<void> {

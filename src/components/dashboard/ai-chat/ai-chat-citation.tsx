@@ -2,11 +2,13 @@
 
 import { useMemo, useState } from "react";
 import {
+  Brain,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
   FileText,
   Link2,
+  Share2,
   StickyNote,
 } from "lucide-react";
 import {
@@ -21,6 +23,8 @@ import { useChatStore } from "@source/stores";
 const typeIcon: Record<string, typeof Link2> = {
   link: Link2,
   note: StickyNote,
+  memory: Brain, // a recalled fact (not a saved doc)
+  connection: Share2, // a knowledge-graph relationship
 };
 
 const SNIPPET_MAX = 160;
