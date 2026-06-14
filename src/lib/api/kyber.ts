@@ -82,6 +82,24 @@ export async function getBinCollections(): Promise<Collection[]> {
   return kyberFetch<Collection[]>("/collections/bin");
 }
 
+// Default collection — where the browser extension saves pages. Returns null when
+// the user hasn't picked one yet (kyber answers 404).
+export async function getDefaultCollection(): Promise<Collection | null> {
+  try {
+    return await kyberFetch<Collection>("/collections/default");
+  } catch (err) {
+    if (err instanceof Error && /404|No default/i.test(err.message)) return null;
+    throw err;
+  }
+}
+
+export async function setDefaultCollection(collectionId: string): Promise<Collection> {
+  return kyberFetch<Collection>("/collections/default", {
+    method: "PUT",
+    body: JSON.stringify({ collection_id: collectionId }),
+  });
+}
+
 export async function permanentDeleteCollection(id: string): Promise<void> {
   await kyberFetch<{ status: string }>(`/collections/${id}/permanent`, { method: "DELETE" });
 }

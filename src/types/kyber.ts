@@ -6,6 +6,8 @@ export interface Collection {
   user_id: string;
   name: string;
   is_favorite: boolean;
+  // true for the collection the browser extension saves into by default.
+  is_default?: boolean;
   item_count: number;
   // false for connector-managed collections (e.g. a synced Notion database) —
   // the UI hides the delete affordance for these.

@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { SettingsPageHeader } from "@/components/settings/settings-page-header";
 import { ConnectedAppsSection } from "@/components/settings/panels/connected-apps-section";
+import { DefaultCollectionSection } from "@/components/settings/panels/default-collection-section";
 import { probeApi, type Connector } from "@/lib/api/probe";
 import { cn } from "@/lib/utils";
 
@@ -146,6 +147,8 @@ export function ConnectionsSettingsPanel() {
       />
 
       <ConnectedAppsSection />
+
+      <DefaultCollectionSection />
 
       {error && (
         <p className="mb-4 max-w-2xl rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
