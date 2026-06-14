@@ -4,6 +4,7 @@
 // (ChatGPT/Claude via OAuth). API-key clients (Claude Code/Cursor) live under Memory API keys.
 
 import { useCallback, useEffect, useState } from "react";
+import Image from "next/image";
 import { Boxes, Copy, Loader2, Unplug } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -14,6 +15,13 @@ import {
 
 const MCP_URL =
   process.env.NEXT_PUBLIC_HOLOCRON_MCP_URL ?? "https://chat.openstash.xyz/mcp";
+
+function appLogo(name: string): string | null {
+  const n = name.toLowerCase();
+  if (n.includes("chatgpt") || n.includes("openai")) return "/connectors/chatgpt.png";
+  if (n.includes("claude")) return "/connectors/claude.png";
+  return null;
+}
 
 function fmtDate(iso: string): string {
   if (!iso) return "";
@@ -108,8 +116,19 @@ export function ConnectedAppsSection() {
               key={app.client_id}
               className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-white px-4 py-3"
             >
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
-                <Boxes className="size-4 text-foreground/70" />
+              <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-slate-200 bg-white">
+                {appLogo(app.name) ? (
+                  <Image
+                    src={appLogo(app.name) as string}
+                    alt={app.name}
+                    width={36}
+                    height={36}
+                    draggable={false}
+                    className="pointer-events-none size-6 rounded object-contain"
+                  />
+                ) : (
+                  <Boxes className="size-4 text-foreground/70" />
+                )}
               </span>
               <div className="min-w-0 flex-1">
                 <div className="truncate text-sm font-medium text-foreground">{app.name}</div>

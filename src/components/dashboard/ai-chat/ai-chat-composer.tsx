@@ -5,7 +5,6 @@ import { ArrowUp, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
-import { AiChatAttachMenu } from "./ai-chat-attach-menu";
 import { AiChatSearchModeMenu } from "./ai-chat-search-mode-menu";
 
 interface AiChatComposerProps {
@@ -58,7 +57,6 @@ export function AiChatComposer({
 
       <div className="flex flex-wrap items-center gap-2 px-3 pb-3 pt-0">
         <div className="flex flex-wrap items-center gap-2">
-          <AiChatAttachMenu />
           <AiChatSearchModeMenu />
         </div>
 
